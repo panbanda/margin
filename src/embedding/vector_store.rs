@@ -225,9 +225,9 @@ mod tests {
             .unwrap();
 
         let query = make_embedding(&[1.0, 0.0]);
-        let results = store.search_with_threshold(&query, 10, 0.7).unwrap();
+        let results = store.search_with_threshold(&query, 10, 0.8).unwrap();
 
-        // Only "high" should have similarity >= 0.7
+        // Only "high" should have similarity >= 0.8 (medium has ~0.707)
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].0, EmailId::from("high"));
     }
