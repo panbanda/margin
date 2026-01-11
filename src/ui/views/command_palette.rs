@@ -265,11 +265,7 @@ impl CommandPalette {
                     .flex()
                     .items_center()
                     .gap(px(8.0))
-                    .child(
-                        div()
-                            .text_color(text_muted)
-                            .child(SharedString::from(">")),
-                    )
+                    .child(div().text_color(text_muted).child(SharedString::from(">")))
                     .child(
                         div()
                             .flex_1()

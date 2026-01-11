@@ -157,11 +157,7 @@ impl RenderOnce for ListItem {
             .bg(bg)
             .cursor_pointer()
             .hover(move |style| style.bg(hover_bg))
-            .child(
-                div()
-                    .text_color(colors.text_primary)
-                    .child(self.label),
-            );
+            .child(div().text_color(colors.text_primary).child(self.label));
 
         if let Some(secondary) = self.secondary {
             element = element.child(
@@ -183,10 +179,7 @@ impl RenderOnce for ListDivider {
     fn render(self, _window: &mut gpui::Window, _cx: &mut gpui::App) -> impl IntoElement {
         let colors = ThemeColors::dark();
 
-        div()
-            .h(px(1.0))
-            .w_full()
-            .bg(colors.border)
+        div().h(px(1.0)).w_full().bg(colors.border)
     }
 }
 
@@ -253,11 +246,7 @@ impl RenderOnce for EmptyState {
             .justify_center()
             .p(px(32.0))
             .gap(px(8.0))
-            .child(
-                div()
-                    .text_color(colors.text_primary)
-                    .child(self.title),
-            );
+            .child(div().text_color(colors.text_primary).child(self.title));
 
         if let Some(description) = self.description {
             element = element.child(
@@ -410,8 +399,7 @@ mod tests {
 
     #[test]
     fn empty_state_builder() {
-        let empty = EmptyState::new("No items")
-            .description("Try adding some items");
+        let empty = EmptyState::new("No items").description("Try adding some items");
 
         assert_eq!(empty.title.as_ref(), "No items");
         assert!(empty.description.is_some());

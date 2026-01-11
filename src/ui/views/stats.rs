@@ -75,7 +75,12 @@ impl StatsView {
         self.time_range = range;
     }
 
-    fn render_stat_card(&self, title: &str, value: &str, subtitle: Option<&str>) -> impl IntoElement {
+    fn render_stat_card(
+        &self,
+        title: &str,
+        value: &str,
+        subtitle: Option<&str>,
+    ) -> impl IntoElement {
         let surface = self.colors.surface;
         let border = self.colors.border;
         let text_primary = self.colors.text_primary;
@@ -132,33 +137,39 @@ impl StatsView {
                     .child(SharedString::from("Statistics")),
             )
             .child(
-                div()
-                    .flex()
-                    .gap(px(4.0))
-                    .children(
-                        [TimeRange::Today, TimeRange::Week, TimeRange::Month, TimeRange::Year]
-                            .into_iter()
-                            .map(|range| {
-                                let is_active = range == self.time_range;
-                                let bg = if is_active {
-                                    surface
-                                } else {
-                                    gpui::Hsla::transparent_black()
-                                };
+                div().flex().gap(px(4.0)).children(
+                    [
+                        TimeRange::Today,
+                        TimeRange::Week,
+                        TimeRange::Month,
+                        TimeRange::Year,
+                    ]
+                    .into_iter()
+                    .map(|range| {
+                        let is_active = range == self.time_range;
+                        let bg = if is_active {
+                            surface
+                        } else {
+                            gpui::Hsla::transparent_black()
+                        };
 
-                                div()
-                                    .px(px(12.0))
-                                    .py(px(6.0))
-                                    .rounded(px(6.0))
-                                    .bg(bg)
-                                    .border_1()
-                                    .border_color(if is_active { border } else { gpui::Hsla::transparent_black() })
-                                    .cursor_pointer()
-                                    .text_sm()
-                                    .text_color(if is_active { text_primary } else { text_muted })
-                                    .child(SharedString::from(range.label().to_string()))
-                            }),
-                    ),
+                        div()
+                            .px(px(12.0))
+                            .py(px(6.0))
+                            .rounded(px(6.0))
+                            .bg(bg)
+                            .border_1()
+                            .border_color(if is_active {
+                                border
+                            } else {
+                                gpui::Hsla::transparent_black()
+                            })
+                            .cursor_pointer()
+                            .text_sm()
+                            .text_color(if is_active { text_primary } else { text_muted })
+                            .child(SharedString::from(range.label().to_string()))
+                    }),
+                ),
             )
     }
 
@@ -182,11 +193,7 @@ impl StatsView {
                         &self.stats.emails_received.to_string(),
                         None,
                     ))
-                    .child(self.render_stat_card(
-                        "Sent",
-                        &self.stats.emails_sent.to_string(),
-                        None,
-                    ))
+                    .child(self.render_stat_card("Sent", &self.stats.emails_sent.to_string(), None))
                     .child(self.render_stat_card(
                         "Archived",
                         &self.stats.emails_archived.to_string(),
@@ -202,13 +209,21 @@ impl StatsView {
 
     fn render_productivity_stats(&self) -> impl IntoElement {
         let response_time = if self.stats.average_response_time_mins >= 60 {
-            format!("{}h {}m", self.stats.average_response_time_mins / 60, self.stats.average_response_time_mins % 60)
+            format!(
+                "{}h {}m",
+                self.stats.average_response_time_mins / 60,
+                self.stats.average_response_time_mins % 60
+            )
         } else {
             format!("{}m", self.stats.average_response_time_mins)
         };
 
         let time_in_app = if self.stats.time_in_app_mins >= 60 {
-            format!("{}h {}m", self.stats.time_in_app_mins / 60, self.stats.time_in_app_mins % 60)
+            format!(
+                "{}h {}m",
+                self.stats.time_in_app_mins / 60,
+                self.stats.time_in_app_mins % 60
+            )
         } else {
             format!("{}m", self.stats.time_in_app_mins)
         };
@@ -227,11 +242,7 @@ impl StatsView {
                 div()
                     .flex()
                     .gap(px(16.0))
-                    .child(self.render_stat_card(
-                        "Avg Response Time",
-                        &response_time,
-                        None,
-                    ))
+                    .child(self.render_stat_card("Avg Response Time", &response_time, None))
                     .child(self.render_stat_card(
                         "Unread Emails",
                         &self.stats.unread_count.to_string(),
@@ -287,11 +298,7 @@ impl StatsView {
                         &self.stats.ai_searches.to_string(),
                         None,
                     ))
-                    .child(self.render_stat_card(
-                        "Tokens Used",
-                        &tokens_display,
-                        None,
-                    )),
+                    .child(self.render_stat_card("Tokens Used", &tokens_display, None)),
             )
     }
 }

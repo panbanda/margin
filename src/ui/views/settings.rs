@@ -234,11 +234,7 @@ impl SettingsView {
                 "Automatically check for new versions",
                 true,
             ))
-            .child(self.render_toggle(
-                "Start at login",
-                "Launch margin when you log in",
-                false,
-            ))
+            .child(self.render_toggle("Start at login", "Launch margin when you log in", false))
     }
 
     fn render_appearance_section(&self) -> impl IntoElement {
@@ -248,10 +244,7 @@ impl SettingsView {
         };
 
         div()
-            .child(self.render_section_header(
-                "Appearance",
-                "Customize how margin looks",
-            ))
+            .child(self.render_section_header("Appearance", "Customize how margin looks"))
             .child(self.render_select(
                 "Theme",
                 "Choose your preferred color scheme",
@@ -274,10 +267,7 @@ impl SettingsView {
 
     fn render_ai_section(&self) -> impl IntoElement {
         div()
-            .child(self.render_section_header(
-                "AI Settings",
-                "Configure AI-powered features",
-            ))
+            .child(self.render_section_header("AI Settings", "Configure AI-powered features"))
             .child(self.render_toggle(
                 "Enable AI features",
                 "Use AI for summaries, drafts, and search",
@@ -303,10 +293,12 @@ impl SettingsView {
 
     fn render_notifications_section(&self) -> impl IntoElement {
         div()
-            .child(self.render_section_header(
-                "Notifications",
-                "Control how you receive notifications",
-            ))
+            .child(
+                self.render_section_header(
+                    "Notifications",
+                    "Control how you receive notifications",
+                ),
+            )
             .child(self.render_toggle(
                 "Enable notifications",
                 "Show desktop notifications for new emails",
@@ -318,11 +310,7 @@ impl SettingsView {
                 "VIP Only",
                 &["All", "VIP Only", "None"],
             ))
-            .child(self.render_toggle(
-                "Sound effects",
-                "Play sounds for notifications",
-                false,
-            ))
+            .child(self.render_toggle("Sound effects", "Play sounds for notifications", false))
     }
 
     fn render_content(&self) -> impl IntoElement {
@@ -333,10 +321,9 @@ impl SettingsView {
             .when(self.active_section == SettingsSection::General, |this| {
                 this.child(self.render_general_section())
             })
-            .when(
-                self.active_section == SettingsSection::Appearance,
-                |this| this.child(self.render_appearance_section()),
-            )
+            .when(self.active_section == SettingsSection::Appearance, |this| {
+                this.child(self.render_appearance_section())
+            })
             .when(self.active_section == SettingsSection::Ai, |this| {
                 this.child(self.render_ai_section())
             })

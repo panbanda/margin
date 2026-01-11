@@ -83,10 +83,7 @@ pub enum AppEvent {
         task_type: AiTaskType,
     },
     /// AI task completed.
-    AiTaskCompleted {
-        task_id: String,
-        result: AiResult,
-    },
+    AiTaskCompleted { task_id: String, result: AiResult },
     /// AI task failed.
     AiTaskFailed { task_id: String, error: String },
 
@@ -148,7 +145,10 @@ pub enum AiResult {
         results: Vec<SearchResultItem>,
     },
     /// Categorization result.
-    Categories { email_id: EmailId, categories: Vec<String> },
+    Categories {
+        email_id: EmailId,
+        categories: Vec<String>,
+    },
     /// Sender analysis result.
     SenderAnalysis {
         sender: String,
@@ -495,7 +495,10 @@ mod tests {
         assert!(matches!(sync_event, AppEvent::AccountSyncCompleted { .. }));
 
         let nav_event = AppEvent::NavigateTo(ViewNavigation::Inbox);
-        assert!(matches!(nav_event, AppEvent::NavigateTo(ViewNavigation::Inbox)));
+        assert!(matches!(
+            nav_event,
+            AppEvent::NavigateTo(ViewNavigation::Inbox)
+        ));
     }
 
     #[test]

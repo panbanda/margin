@@ -197,7 +197,9 @@ impl AppState {
 
     /// Get sync status for an account.
     pub fn get_sync_status(&self, account_id: &AccountId) -> &SyncStatus {
-        self.sync_status.get(account_id).unwrap_or(&SyncStatus::Idle)
+        self.sync_status
+            .get(account_id)
+            .unwrap_or(&SyncStatus::Idle)
     }
 
     /// Check if any account is currently syncing.

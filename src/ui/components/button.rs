@@ -119,7 +119,9 @@ impl RenderOnce for Button {
 
         let (bg, text_color, hover_bg) = match self.variant {
             ButtonVariant::Primary => (colors.accent, colors.text_primary, colors.accent_hover),
-            ButtonVariant::Secondary => (colors.surface_elevated, colors.text_primary, colors.border),
+            ButtonVariant::Secondary => {
+                (colors.surface_elevated, colors.text_primary, colors.border)
+            }
             ButtonVariant::Danger => (colors.error, colors.text_primary, colors.error),
             ButtonVariant::Ghost => (
                 gpui::Hsla::transparent_black(),
@@ -241,7 +243,9 @@ impl RenderOnce for IconButton {
 
         if !self.disabled {
             element = element.hover(move |style| {
-                style.bg(colors.surface_elevated).text_color(colors.text_primary)
+                style
+                    .bg(colors.surface_elevated)
+                    .text_color(colors.text_primary)
             });
 
             if let Some(handler) = self.on_click {

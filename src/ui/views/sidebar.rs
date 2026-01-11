@@ -98,26 +98,22 @@ impl Sidebar {
             .cursor_pointer()
             .hover(move |style| style.bg(hover_bg))
             .child(
-                div()
-                    .flex()
-                    .items_center()
-                    .justify_between()
-                    .child(
-                        div()
-                            .flex()
-                            .items_center()
-                            .gap(px(8.0))
-                            .child(
-                                div()
-                                    .text_color(muted_color)
-                                    .child(SharedString::from(icon.to_string())),
-                            )
-                            .child(
-                                div()
-                                    .text_color(text_color)
-                                    .child(SharedString::from(label.to_string())),
-                            ),
-                    ),
+                div().flex().items_center().justify_between().child(
+                    div()
+                        .flex()
+                        .items_center()
+                        .gap(px(8.0))
+                        .child(
+                            div()
+                                .text_color(muted_color)
+                                .child(SharedString::from(icon.to_string())),
+                        )
+                        .child(
+                            div()
+                                .text_color(text_color)
+                                .child(SharedString::from(label.to_string())),
+                        ),
+                ),
             );
 
         if let Some(count) = unread {
@@ -167,12 +163,7 @@ impl Sidebar {
                     .flex()
                     .items_center()
                     .gap(px(8.0))
-                    .child(
-                        div()
-                            .size(px(8.0))
-                            .rounded_full()
-                            .bg(self.colors.accent),
-                    )
+                    .child(div().size(px(8.0)).rounded_full().bg(self.colors.accent))
                     .child(
                         div()
                             .text_color(self.colors.text_primary)
@@ -253,15 +244,13 @@ impl Render for Sidebar {
                             )),
                     )
                     .child(self.render_section_header("SCREENER"))
-                    .child(
-                        div().child(self.render_mailbox_item(
-                            "screener",
-                            "New Senders",
-                            "?",
-                            ViewType::Screener,
-                            Some(5),
-                        )),
-                    )
+                    .child(div().child(self.render_mailbox_item(
+                        "screener",
+                        "New Senders",
+                        "?",
+                        ViewType::Screener,
+                        Some(5),
+                    )))
                     .when(!self.labels.is_empty(), |this| {
                         this.child(self.render_section_header("LABELS"))
                             .children(self.labels.iter().map(|l| self.render_label_item(l)))

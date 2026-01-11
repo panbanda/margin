@@ -56,11 +56,7 @@ impl Composer {
     }
 
     /// Create a composer for reply.
-    pub fn for_reply(
-        to: String,
-        subject: String,
-        _cx: &mut Context<Self>,
-    ) -> Self {
+    pub fn for_reply(to: String, subject: String, _cx: &mut Context<Self>) -> Self {
         let subject = if subject.starts_with("Re:") {
             subject
         } else {
@@ -266,18 +262,13 @@ impl Composer {
             .border_1()
             .border_color(border)
             .child(
-                div()
-                    .flex()
-                    .items_center()
-                    .gap(px(8.0))
-                    .mb(px(8.0))
-                    .child(
-                        div()
-                            .text_sm()
-                            .text_color(accent)
-                            .font_weight(FontWeight::MEDIUM)
-                            .child(SharedString::from("AI Suggestion")),
-                    ),
+                div().flex().items_center().gap(px(8.0)).mb(px(8.0)).child(
+                    div()
+                        .text_sm()
+                        .text_color(accent)
+                        .font_weight(FontWeight::MEDIUM)
+                        .child(SharedString::from("AI Suggestion")),
+                ),
             )
             .child(
                 div()

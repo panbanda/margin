@@ -133,12 +133,9 @@ impl MessageList {
                             .text_color(self.colors.text_primary)
                             .child(SharedString::from(self.view_title().to_string())),
                     )
-                    .child(
-                        div()
-                            .text_sm()
-                            .text_color(self.colors.text_muted)
-                            .child(SharedString::from(format!("{} threads", self.threads.len()))),
-                    ),
+                    .child(div().text_sm().text_color(self.colors.text_muted).child(
+                        SharedString::from(format!("{} threads", self.threads.len())),
+                    )),
             )
     }
 
@@ -196,15 +193,9 @@ impl MessageList {
                                     .child(SharedString::from(thread.sender_name.clone())),
                             )
                             .when(thread.message_count > 1, |this| {
-                                this.child(
-                                    div()
-                                        .text_xs()
-                                        .text_color(text_muted)
-                                        .child(SharedString::from(format!(
-                                            "({})",
-                                            thread.message_count
-                                        ))),
-                                )
+                                this.child(div().text_xs().text_color(text_muted).child(
+                                    SharedString::from(format!("({})", thread.message_count)),
+                                ))
                             }),
                     )
                     .child(
@@ -245,42 +236,32 @@ impl MessageList {
     }
 
     fn render_empty_state(&self) -> impl IntoElement {
-        div()
-            .flex_1()
-            .flex()
-            .items_center()
-            .justify_center()
-            .child(
-                div()
-                    .flex()
-                    .flex_col()
-                    .items_center()
-                    .gap(px(8.0))
-                    .child(
-                        div()
-                            .text_color(self.colors.text_primary)
-                            .child(SharedString::from("No messages")),
-                    )
-                    .child(
-                        div()
-                            .text_sm()
-                            .text_color(self.colors.text_muted)
-                            .child(SharedString::from("Your inbox is empty")),
-                    ),
-            )
+        div().flex_1().flex().items_center().justify_center().child(
+            div()
+                .flex()
+                .flex_col()
+                .items_center()
+                .gap(px(8.0))
+                .child(
+                    div()
+                        .text_color(self.colors.text_primary)
+                        .child(SharedString::from("No messages")),
+                )
+                .child(
+                    div()
+                        .text_sm()
+                        .text_color(self.colors.text_muted)
+                        .child(SharedString::from("Your inbox is empty")),
+                ),
+        )
     }
 
     fn render_loading_state(&self) -> impl IntoElement {
-        div()
-            .flex_1()
-            .flex()
-            .items_center()
-            .justify_center()
-            .child(
-                div()
-                    .text_color(self.colors.text_muted)
-                    .child(SharedString::from("Loading...")),
-            )
+        div().flex_1().flex().items_center().justify_center().child(
+            div()
+                .text_color(self.colors.text_muted)
+                .child(SharedString::from("Loading...")),
+        )
     }
 }
 

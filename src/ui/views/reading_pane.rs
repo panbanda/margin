@@ -115,16 +115,11 @@ impl ReadingPane {
     }
 
     fn render_empty_state(&self) -> impl IntoElement {
-        div()
-            .flex_1()
-            .flex()
-            .items_center()
-            .justify_center()
-            .child(
-                div()
-                    .text_color(self.colors.text_muted)
-                    .child(SharedString::from("Select a message to read")),
-            )
+        div().flex_1().flex().items_center().justify_center().child(
+            div()
+                .text_color(self.colors.text_muted)
+                .child(SharedString::from("Select a message to read")),
+        )
     }
 
     fn render_thread_header(&self, thread: &ThreadDetail) -> impl IntoElement {
@@ -141,22 +136,18 @@ impl ReadingPane {
                     .child(SharedString::from(thread.subject.clone())),
             )
             .when(!thread.labels.is_empty(), |this| {
-                this.child(
-                    div()
-                        .flex()
-                        .gap(px(8.0))
-                        .mt(px(8.0))
-                        .children(thread.labels.iter().map(|label| {
-                            div()
-                                .px(px(8.0))
-                                .py(px(2.0))
-                                .rounded(px(4.0))
-                                .bg(self.colors.surface_elevated)
-                                .text_xs()
-                                .text_color(self.colors.text_secondary)
-                                .child(SharedString::from(label.clone()))
-                        })),
-                )
+                this.child(div().flex().gap(px(8.0)).mt(px(8.0)).children(
+                    thread.labels.iter().map(|label| {
+                        div()
+                            .px(px(8.0))
+                            .py(px(2.0))
+                            .rounded(px(4.0))
+                            .bg(self.colors.surface_elevated)
+                            .text_xs()
+                            .text_color(self.colors.text_secondary)
+                            .child(SharedString::from(label.clone()))
+                    }),
+                ))
             })
     }
 
@@ -211,15 +202,12 @@ impl ReadingPane {
                                                     message.sender_name.clone(),
                                                 )),
                                         )
-                                        .child(
-                                            div()
-                                                .text_sm()
-                                                .text_color(text_muted)
-                                                .child(SharedString::from(format!(
-                                                    "to {}",
-                                                    message.recipients.join(", ")
-                                                ))),
-                                        ),
+                                        .child(div().text_sm().text_color(text_muted).child(
+                                            SharedString::from(format!(
+                                                "to {}",
+                                                message.recipients.join(", ")
+                                            )),
+                                        )),
                                 ),
                         )
                         .child(
@@ -241,16 +229,12 @@ impl ReadingPane {
                             .pt(px(12.0))
                             .border_t_1()
                             .border_color(border_color)
-                            .child(
-                                div()
-                                    .text_sm()
-                                    .text_color(text_muted)
-                                    .mb(px(8.0))
-                                    .child(SharedString::from(format!(
-                                        "{} attachment(s)",
-                                        message.attachments.len()
-                                    ))),
-                            )
+                            .child(div().text_sm().text_color(text_muted).mb(px(8.0)).child(
+                                SharedString::from(format!(
+                                    "{} attachment(s)",
+                                    message.attachments.len()
+                                )),
+                            ))
                             .children(message.attachments.iter().map(|att| {
                                 div()
                                     .flex()
@@ -315,31 +299,20 @@ impl ReadingPane {
                                         .flex()
                                         .justify_between()
                                         .child(
-                                            div()
-                                                .text_sm()
-                                                .text_color(text_primary)
-                                                .child(SharedString::from(
-                                                    message.sender_name.clone(),
-                                                )),
+                                            div().text_sm().text_color(text_primary).child(
+                                                SharedString::from(message.sender_name.clone()),
+                                            ),
                                         )
                                         .child(
-                                            div()
-                                                .text_xs()
-                                                .text_color(text_muted)
-                                                .child(SharedString::from(
-                                                    message.timestamp.clone(),
-                                                )),
+                                            div().text_xs().text_color(text_muted).child(
+                                                SharedString::from(message.timestamp.clone()),
+                                            ),
                                         ),
                                 )
                                 .child(
-                                    div()
-                                        .text_sm()
-                                        .text_color(text_secondary)
-                                        .truncate()
-                                        .child(SharedString::from(truncate_text(
-                                            &message.body_text,
-                                            80,
-                                        ))),
+                                    div().text_sm().text_color(text_secondary).truncate().child(
+                                        SharedString::from(truncate_text(&message.body_text, 80)),
+                                    ),
                                 ),
                         ),
                 )
@@ -404,12 +377,13 @@ impl Render for ReadingPane {
             .when_some(self.thread.clone(), |this, thread| {
                 this.child(self.render_thread_header(&thread))
                     .child(
-                        div().flex_1().overflow_y_hidden().children(
-                            thread.messages.iter().map(|msg| {
+                        div()
+                            .flex_1()
+                            .overflow_y_hidden()
+                            .children(thread.messages.iter().map(|msg| {
                                 let is_expanded = self.expanded_messages.contains(&msg.id);
                                 self.render_message(msg, is_expanded)
-                            }),
-                        ),
+                            })),
                     )
                     .when(self.inline_composer_visible, |this| {
                         this.child(self.render_inline_composer())
