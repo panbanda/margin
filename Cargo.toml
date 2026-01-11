@@ -36,6 +36,8 @@ mail-parser = "0.9"
 candle-core = "0.8"
 candle-nn = "0.8"
 candle-transformers = "0.8"
+tokenizers = "0.21"
+hf-hub = "0.3"
 
 # Credential storage
 keyring = "3"
