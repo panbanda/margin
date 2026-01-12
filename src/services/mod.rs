@@ -23,11 +23,13 @@
 //! - [`AiService`]: Manages AI provider interactions for summarization, drafts, and search
 //! - [`SyncService`]: Handles synchronization between remote providers and local storage
 //! - [`SearchService`]: Combined full-text and semantic search across emails
+//! - [`SnoozeService`]: Temporarily hides emails until a scheduled time
 //! - [`TelemetryService`]: Local usage statistics and event tracking
 
 mod ai_service;
 mod email_service;
 mod search_service;
+mod snooze_service;
 mod sync_service;
 mod telemetry_service;
 mod undo_service;
@@ -40,6 +42,7 @@ pub use search_service::{
     DateRange, EmailMetadata, FtsHit, SearchFolder, SearchHit, SearchMode, SearchQuery,
     SearchResults, SearchService, SearchSettings, SearchSource, SearchStorage,
 };
+pub use snooze_service::{SnoozeDuration, SnoozeError, SnoozeService, SnoozeStorage, SnoozedItem};
 pub use sync_service::{SyncResult, SyncService, SyncSettings, SyncStatus};
 pub use telemetry_service::{
     AggregatedStats, DailyStats, EventPayload, EventType, StatsTimeRange, TelemetryError,
