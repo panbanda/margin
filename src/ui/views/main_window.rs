@@ -37,6 +37,7 @@ pub struct MainWindow {
 
 /// Label representation for sidebar
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct SidebarLabel {
     pub id: LabelId,
     pub name: String,
@@ -45,6 +46,7 @@ pub struct SidebarLabel {
 
 /// Thread item for the message list
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct ThreadListItem {
     pub id: ThreadId,
     pub subject: String,
@@ -59,6 +61,7 @@ pub struct ThreadListItem {
 
 /// Detailed thread data for reading pane
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct ThreadDetail {
     pub id: ThreadId,
     pub subject: String,
@@ -68,6 +71,7 @@ pub struct ThreadDetail {
 
 /// Individual message in a thread
 #[derive(Clone)]
+#[allow(dead_code)]
 pub struct MessageDetail {
     pub id: EmailId,
     pub sender_name: String,
