@@ -565,7 +565,7 @@ impl Render for StatusBar {
                                 .child(format!("{} unread", self.unread_count)),
                         )
                     })
-                    .child(div().text_xs().text_color(rgba(0x52525BFF)).child("margin")),
+                    .child(div().text_xs().text_color(rgba(0x52525BFF)).child("The Heap")),
             )
     }
 }

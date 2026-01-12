@@ -1,4 +1,4 @@
-# margin - Architecture Document
+# The Heap - Architecture Document
 
 > SPARC Phase 3: Architecture
 > Version: 0.1.0
@@ -6,7 +6,7 @@
 
 ## Overview
 
-margin is a native desktop email client built entirely in Rust, using gpui for the UI layer. The architecture prioritizes:
+The Heap is a native desktop email client built entirely in Rust, using gpui for the UI layer. The architecture prioritizes:
 
 - **Performance**: Native code, GPU-accelerated rendering, efficient data structures
 - **Privacy**: Local-first data storage, no telemetry, user-controlled AI
@@ -57,7 +57,7 @@ margin is a native desktop email client built entirely in Rust, using gpui for t
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                                  margin                                      │
+│                                The Heap                                      │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
@@ -216,7 +216,7 @@ impl Render for MessageListItem {
 ```rust
 // Define actions for keyboard shortcuts
 actions!(
-    margin,
+    heap,
     [
         Compose,
         Reply,
@@ -1088,7 +1088,7 @@ pub struct PrivacySettings {
 
 ### Configuration File
 
-Settings stored in `~/.config/margin/settings.json` (or XDG equivalent):
+Settings stored in `~/.config/heap/settings.json` (or XDG equivalent):
 
 ```json
 {
@@ -1137,7 +1137,7 @@ Settings stored in `~/.config/margin/settings.json` (or XDG equivalent):
 ## Directory Structure
 
 ```
-margin/
+heap/
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml
@@ -1257,7 +1257,7 @@ margin/
 ```rust
 // All credentials stored via OS keychain
 pub struct KeychainAccess {
-    service_name: String,  // "io.margin.app"
+    service_name: String,  // "com.panbanda.heap"
 }
 
 impl KeychainAccess {
@@ -1346,21 +1346,23 @@ impl CacheLayer {
 
 ## Licensing
 
-margin is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+The Heap is licensed under the **Apache License 2.0**.
 
 ```
-margin - A keyboard-driven, AI-augmented email client
-Copyright (C) 2025 margin contributors
+The Heap - A keyboard-driven, AI-augmented email client
+Copyright 2025 Jonathan Reyes <me@jonathanreyes.com>
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
 ## Testing Strategy
@@ -1405,8 +1407,8 @@ cargo test
 cargo llvm-cov --all-features --workspace --lcov --output-path lcov.info
 
 # Run specific test suite
-cargo test --package margin-core
-cargo test --package margin-ui
+cargo test --package heap-core
+cargo test --package heap-ui
 
 # Run benchmarks
 cargo bench
@@ -1580,11 +1582,11 @@ jobs:
           cargo install cargo-bundle
           cargo bundle --release --target ${{ matrix.target }}
           # Create DMG
-          hdiutil create -volname "margin" -srcfolder target/${{ matrix.target }}/release/bundle/osx/margin.app -ov -format UDZO dist/margin-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.dmg
+          hdiutil create -volname "The Heap" -srcfolder "target/${{ matrix.target }}/release/bundle/osx/The Heap.app" -ov -format UDZO dist/heap-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.dmg
       - name: Upload macOS artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/margin-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.dmg
+          files: dist/heap-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.dmg
 
   build-linux:
     name: Build Linux
@@ -1613,17 +1615,17 @@ jobs:
           chmod +x appimagetool
           # Create AppDir structure
           mkdir -p AppDir/usr/bin AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps
-          cp target/${{ matrix.target }}/release/margin AppDir/usr/bin/
-          cp assets/icons/margin.png AppDir/usr/share/icons/hicolor/256x256/apps/
-          cp assets/margin.desktop AppDir/usr/share/applications/
-          ln -s usr/bin/margin AppDir/AppRun
-          ln -s usr/share/icons/hicolor/256x256/apps/margin.png AppDir/margin.png
+          cp target/${{ matrix.target }}/release/heap AppDir/usr/bin/
+          cp assets/icons/heap.png AppDir/usr/share/icons/hicolor/256x256/apps/
+          cp assets/heap.desktop AppDir/usr/share/applications/
+          ln -s usr/bin/heap AppDir/AppRun
+          ln -s usr/share/icons/hicolor/256x256/apps/heap.png AppDir/heap.png
           # Build AppImage
-          ./appimagetool AppDir dist/margin-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.AppImage
+          ./appimagetool AppDir dist/heap-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.AppImage
       - name: Upload Linux artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/margin-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.AppImage
+          files: dist/heap-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.AppImage
 
   publish-release:
     name: Publish Release
@@ -1675,9 +1677,9 @@ cargo llvm-cov --all-features --workspace
 ### Distribution
 
 - **Direct download**: .dmg (macOS), .AppImage (Linux) from GitHub Releases
-- **Homebrew** (macOS): `brew install --cask margin`
-- **AUR** (Arch Linux): `yay -S margin`
-- **Flatpak** (Linux): `flatpak install margin`
+- **Homebrew** (macOS): `brew install --cask heap`
+- **AUR** (Arch Linux): `yay -S heap`
+- **Flatpak** (Linux): `flatpak install heap`
 
 ### Updates
 

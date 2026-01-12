@@ -1,6 +1,6 @@
 //! Database and credential storage.
 //!
-//! This module provides the storage layer for margin, including:
+//! This module provides the storage layer for The Heap, including:
 //!
 //! - SQLite database for emails, threads, accounts, and other data
 //! - OS keychain integration for secure credential storage
@@ -37,7 +37,7 @@ impl StorageLayer {
     /// Creates a storage layer with an in-memory database for testing.
     pub async fn in_memory() -> Result<Self> {
         let db = Database::open_in_memory().await?;
-        let keychain = KeychainAccess::with_service("io.margin.test");
+        let keychain = KeychainAccess::with_service("com.panbanda.heap.test");
 
         Ok(Self { db, keychain })
     }
@@ -83,7 +83,7 @@ mod tests {
     #[tokio::test]
     async fn storage_layer_keychain_service() {
         let storage = StorageLayer::in_memory().await.unwrap();
-        assert_eq!(storage.keychain().service_name(), "io.margin.test");
+        assert_eq!(storage.keychain().service_name(), "com.panbanda.heap.test");
     }
 
     #[tokio::test]

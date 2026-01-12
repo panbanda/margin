@@ -1,4 +1,4 @@
-//! Domain layer types for margin email client.
+//! Domain layer types for The Heap email client.
 //!
 //! This module contains the core domain types used throughout the application,
 //! including email, thread, account, label, contact, and screener entities.

@@ -128,7 +128,7 @@ impl ViewType {
             ViewType::Archive => "[Gmail]/All Mail",
             ViewType::Trash => "[Gmail]/Trash",
             ViewType::All => "[Gmail]/All Mail",
-            ViewType::Snoozed => "margin/Snoozed",
+            ViewType::Snoozed => "heap/Snoozed",
             ViewType::Label(_) => "INBOX", // Will be filtered by label
         }
     }
@@ -513,7 +513,7 @@ impl<S: EmailStorage> EmailService<S> {
                 ThreadMetadataUpdate {
                     snooze_until: Some(Some(until)),
                     remove_labels: vec![LabelId::from("INBOX")],
-                    add_labels: vec![LabelId::from("margin/Snoozed")],
+                    add_labels: vec![LabelId::from("heap/Snoozed")],
                     ..Default::default()
                 },
             )
@@ -532,7 +532,7 @@ impl<S: EmailStorage> EmailService<S> {
                 ThreadMetadataUpdate {
                     snooze_until: Some(None),
                     add_labels: vec![LabelId::from("INBOX")],
-                    remove_labels: vec![LabelId::from("margin/Snoozed")],
+                    remove_labels: vec![LabelId::from("heap/Snoozed")],
                     ..Default::default()
                 },
             )

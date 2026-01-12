@@ -30,8 +30,8 @@ pub struct KeychainAccess {
 }
 
 impl KeychainAccess {
-    /// Default service name for margin credentials.
-    pub const DEFAULT_SERVICE: &'static str = "io.margin.app";
+    /// Default service name for The Heap credentials.
+    pub const DEFAULT_SERVICE: &'static str = "com.panbanda.heap";
 
     /// Creates a new KeychainAccess with the default service name.
     pub fn new() -> Self {
@@ -198,7 +198,7 @@ mod tests {
         #[tokio::test]
         #[ignore = "requires OS keychain access"]
         async fn store_retrieve_delete_cycle() {
-            let keychain = KeychainAccess::with_service("io.margin.test");
+            let keychain = KeychainAccess::with_service("com.panbanda.heap.test");
             let key = "test-credential";
             let value = "test-secret-value";
 

@@ -19,8 +19,8 @@
 //! # Example
 //!
 //! ```ignore
-//! use margin::providers::email::{EmailProvider, GmailProvider, ImapProvider, Pagination};
-//! use margin::domain::ProviderType;
+//! use heap::providers::email::{EmailProvider, GmailProvider, ImapProvider, Pagination};
+//! use heap::domain::ProviderType;
 //!
 //! async fn list_inbox(provider: &dyn EmailProvider) {
 //!     let threads = provider

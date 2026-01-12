@@ -1,6 +1,6 @@
-//! margin - Entry point for the desktop email client
+//! The Heap - Entry point for the desktop email client
 
-use margin::App;
+use heap::App;
 
 fn main() {
     // Initialize logging
@@ -11,7 +11,7 @@ fn main() {
         )
         .init();
 
-    tracing::info!("Starting margin");
+    tracing::info!("Starting The Heap");
 
     // Run the gpui application
     if let Err(e) = App::run() {

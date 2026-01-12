@@ -1,6 +1,6 @@
 //! UI components and views
 //!
-//! This module contains the gpui-based user interface for margin.
+//! This module contains the gpui-based user interface for The Heap.
 //! The UI is organized into:
 //! - `theme`: Color schemes and styling
 //! - `components`: Reusable UI primitives

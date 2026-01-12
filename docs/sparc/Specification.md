@@ -1,4 +1,4 @@
-# margin - Specification Document
+# The Heap - Specification Document
 
 > SPARC Phase 1: Specification
 > Version: 0.1.0
@@ -6,9 +6,9 @@
 
 ## Executive Summary
 
-margin is a desktop email client for technical users, built in Rust with gpui. It prioritizes keyboard-driven workflows, local-first architecture, AI augmentation with full user control, and privacy by default.
+The Heap is a desktop email client for technical users, built in Rust with gpui. It prioritizes keyboard-driven workflows, local-first architecture, AI augmentation with full user control, and privacy by default.
 
-The name reflects the product philosophy: operating in the margins between you and your inbox, adding value without getting in the way.
+The name reflects the product philosophy: emails pile up like a heap, and this client helps you efficiently work through them.
 
 ## Problem Statement
 
@@ -378,7 +378,7 @@ Technical users need:
 **Goal**: Process overnight emails efficiently
 
 **Flow**:
-1. Launch margin, sees unified inbox with unread count
+1. Launch The Heap, sees unified inbox with unread count
 2. Press `G I` to ensure in inbox
 3. Sees AI-generated inbox digest summary
 4. Uses `J`/`K` to navigate, `O` to expand threads
@@ -431,12 +431,12 @@ Technical users need:
 **Goal**: Process emails and draft responses
 
 **Flow**:
-1. Opens margin, sees "Offline" indicator in status bar
+1. Opens The Heap, sees "Offline" indicator in status bar
 2. Reads fully synced emails normally
 3. Archives emails, changes queued
 4. Composes reply, saved as draft
 5. Lands, connects to wifi
-6. margin syncs automatically, sends queued items
+6. The Heap syncs automatically, sends queued items
 
 ### US-6: Reviewing Usage Statistics
 
@@ -481,13 +481,13 @@ Technical users need:
 
 ## Licensing
 
-margin is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+The Heap is licensed under the **Apache License 2.0**.
 
 This ensures:
-- Source code remains open and available
-- Modifications must be shared under the same license
-- Network use triggers copyleft provisions
-- Users retain freedom to run, study, share, and modify
+- Permissive license allowing commercial use
+- Patent grant protection
+- Clear attribution requirements
+- Freedom to use, modify, and distribute
 
 ## Open Questions
 

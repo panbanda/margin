@@ -38,7 +38,7 @@ impl MainWindow {
                     .flex()
                     .items_center()
                     .gap(px(8.0))
-                    .child(SharedString::from("margin")),
+                    .child(SharedString::from("The Heap")),
             )
             .child(
                 div()
@@ -124,8 +124,8 @@ impl MainWindow {
                     .flex_1()
                     .overflow_y_hidden()
                     .child(self.render_message_item(
-                        "Welcome to margin",
-                        "The margin team",
+                        "Welcome to The Heap",
+                        "The Heap team",
                         "Get started with your new email client...",
                         true,
                     ))

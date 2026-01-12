@@ -1,13 +1,13 @@
 //! Application actions for keyboard shortcuts and commands.
 //!
-//! Actions are the primary way to trigger functionality in margin.
+//! Actions are the primary way to trigger functionality in The Heap.
 //! They can be bound to keyboard shortcuts or invoked programmatically.
 
 use gpui::actions;
 
 // Email operations
 actions!(
-    margin,
+    heap,
     [
         // Composition
         Compose,

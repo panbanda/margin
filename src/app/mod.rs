@@ -22,7 +22,7 @@ use crate::ui::MainWindow;
 
 // Define application actions
 actions!(
-    margin,
+    heap,
     [
         Quit,
         Compose,

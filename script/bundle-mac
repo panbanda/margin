@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Bundle Margin for macOS
+# Bundle The Heap for macOS
 # Usage: ./script/bundle-mac [--release] [--sign]
 
 RELEASE_FLAG=""
@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "Building Margin for $TARGET_TRIPLE..."
+echo "Building The Heap for $TARGET_TRIPLE..."
 
 # Set macOS deployment target
 export MACOSX_DEPLOYMENT_TARGET=10.15
@@ -46,9 +46,9 @@ if [[ -z "$APP_PATH" ]]; then
     echo "Failed to determine app path from cargo bundle output"
     # Try to find it manually
     if [[ -n "$RELEASE_FLAG" ]]; then
-        APP_PATH="target/$TARGET_TRIPLE/release/bundle/osx/Margin.app"
+        APP_PATH="target/$TARGET_TRIPLE/release/bundle/osx/The Heap.app"
     else
-        APP_PATH="target/$TARGET_TRIPLE/debug/bundle/osx/Margin.app"
+        APP_PATH="target/$TARGET_TRIPLE/debug/bundle/osx/The Heap.app"
     fi
 fi
 
@@ -65,12 +65,12 @@ if [[ "$SIGN_APP" == true ]]; then
 
         # Sign the main binary
         /usr/bin/codesign --deep --force --timestamp --options runtime \
-            --entitlements resources/margin.entitlements \
-            --sign "$IDENTITY" "${APP_PATH}/Contents/MacOS/margin" -v
+            --entitlements resources/heap.entitlements \
+            --sign "$IDENTITY" "${APP_PATH}/Contents/MacOS/heap" -v
 
         # Sign the app bundle
         /usr/bin/codesign --force --timestamp --options runtime \
-            --entitlements resources/margin.entitlements \
+            --entitlements resources/heap.entitlements \
             --sign "$IDENTITY" "${APP_PATH}" -v
 
         echo "App signed successfully"

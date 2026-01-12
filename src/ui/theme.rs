@@ -1,4 +1,4 @@
-//! Theme definitions for margin
+//! Theme definitions for The Heap
 
 use gpui::{rgb, Hsla};
 

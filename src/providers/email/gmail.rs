@@ -215,7 +215,7 @@ pub struct GmailCredentials {
 /// # Example
 ///
 /// ```ignore
-/// use margin::providers::email::{GmailProvider, EmailProvider, Pagination};
+/// use heap::providers::email::{GmailProvider, EmailProvider, Pagination};
 ///
 /// let mut provider = GmailProvider::new(account_id);
 /// provider.authenticate().await?;
@@ -280,7 +280,7 @@ impl GmailProvider {
 
     /// Loads credentials from the system keychain.
     fn load_credentials_from_keychain(&self) -> Result<GmailCredentials> {
-        let entry = keyring::Entry::new("margin", &format!("gmail-{}", self.account_id.0))
+        let entry = keyring::Entry::new("heap", &format!("gmail-{}", self.account_id.0))
             .map_err(|e| ProviderError::Authentication(format!("keyring error: {}", e)))?;
 
         let creds_json = entry
@@ -293,7 +293,7 @@ impl GmailProvider {
 
     /// Saves credentials to the system keychain.
     pub fn save_credentials_to_keychain(&self, credentials: &GmailCredentials) -> Result<()> {
-        let entry = keyring::Entry::new("margin", &format!("gmail-{}", self.account_id.0))
+        let entry = keyring::Entry::new("heap", &format!("gmail-{}", self.account_id.0))
             .map_err(|e| ProviderError::Authentication(format!("keyring error: {}", e)))?;
 
         let creds_json = serde_json::to_string(credentials)

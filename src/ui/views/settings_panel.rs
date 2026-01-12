@@ -224,7 +224,7 @@ impl SettingsPanel {
                     ToggleSetting::new("external_images", "Load External Images", false)
                         .with_description("Automatically load images from external servers"),
                     ToggleSetting::new("telemetry", "Anonymous Telemetry", true)
-                        .with_description("Help improve margin by sending anonymous usage data"),
+                        .with_description("Help improve The Heap by sending anonymous usage data"),
                 ],
             ),
         ]

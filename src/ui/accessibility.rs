@@ -1,4 +1,4 @@
-//! Accessibility support for the margin UI.
+//! Accessibility support for The Heap UI.
 //!
 //! Provides accessibility features including:
 //! - Screen reader announcements

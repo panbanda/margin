@@ -234,7 +234,7 @@ impl SettingsView {
                 "Automatically check for new versions",
                 true,
             ))
-            .child(self.render_toggle("Start at login", "Launch margin when you log in", false))
+            .child(self.render_toggle("Start at login", "Launch The Heap when you log in", false))
     }
 
     fn render_appearance_section(&self) -> impl IntoElement {
@@ -244,7 +244,7 @@ impl SettingsView {
         };
 
         div()
-            .child(self.render_section_header("Appearance", "Customize how margin looks"))
+            .child(self.render_section_header("Appearance", "Customize how The Heap looks"))
             .child(self.render_select(
                 "Theme",
                 "Choose your preferred color scheme",

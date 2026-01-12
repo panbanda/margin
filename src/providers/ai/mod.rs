@@ -11,7 +11,7 @@
 //! # Example
 //!
 //! ```rust,no_run
-//! use margin::providers::ai::{
+//! use heap::providers::ai::{
 //!     LlmProvider, CompletionRequest, Message,
 //!     OpenAiCompatibleProvider, AnthropicProvider, OllamaProvider,
 //! };

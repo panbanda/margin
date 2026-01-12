@@ -1,6 +1,6 @@
 //! Application state management.
 //!
-//! Centralized state for the margin application including accounts,
+//! Centralized state for The Heap application including accounts,
 //! current view, selection state, and runtime status.
 
 use std::collections::HashSet;

@@ -1,6 +1,6 @@
 //! SQL schema definitions as const strings.
 //!
-//! Contains the complete SQLite schema for the margin email client.
+//! Contains the complete SQLite schema for The Heap email client.
 
 /// SQL to create the accounts table.
 pub const CREATE_ACCOUNTS: &str = r#"

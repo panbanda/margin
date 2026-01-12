@@ -260,7 +260,7 @@ mod base64_serde {
 /// # Example
 ///
 /// ```ignore
-/// use margin::providers::email::{EmailProvider, Pagination};
+/// use heap::providers::email::{EmailProvider, Pagination};
 ///
 /// async fn list_inbox(provider: &impl EmailProvider) -> Result<()> {
 ///     let threads = provider

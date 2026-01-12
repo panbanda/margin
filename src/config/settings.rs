@@ -1,6 +1,6 @@
 //! Application settings and configuration types.
 //!
-//! Settings are persisted to `~/.config/margin/settings.json` (or XDG equivalent)
+//! Settings are persisted to `~/.config/heap/settings.json` (or XDG equivalent)
 //! and loaded at application startup.
 
 use serde::{Deserialize, Serialize};

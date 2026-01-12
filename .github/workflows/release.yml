@@ -75,13 +75,13 @@ jobs:
       - name: Create archive
         run: |
           TAG="${{ needs.release-please.outputs.tag_name }}"
-          VERSION="${TAG#margin-v}"
-          ARCHIVE_NAME="margin_${VERSION}_${{ matrix.target }}"
+          VERSION="${TAG#heap-v}"
+          ARCHIVE_NAME="heap_${VERSION}_${{ matrix.target }}"
 
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/margin dist/
+          cp target/${{ matrix.target }}/release/heap dist/
           cd dist
-          tar -czvf "${ARCHIVE_NAME}.tar.gz" margin
+          tar -czvf "${ARCHIVE_NAME}.tar.gz" heap
           shasum -a 256 "${ARCHIVE_NAME}.tar.gz" > "${ARCHIVE_NAME}.tar.gz.sha256"
 
       - name: Upload release assets
@@ -142,14 +142,14 @@ jobs:
       - name: Create DMG
         run: |
           TAG="${{ needs.release-please.outputs.tag_name }}"
-          VERSION="${TAG#margin-v}"
-          DMG_NAME="Margin_${VERSION}_${{ matrix.arch }}.dmg"
-          APP_PATH="target/${{ matrix.target }}/release/bundle/osx/Margin.app"
+          VERSION="${TAG#heap-v}"
+          DMG_NAME="TheHeap_${VERSION}_${{ matrix.arch }}.dmg"
+          APP_PATH="target/${{ matrix.target }}/release/bundle/osx/The Heap.app"
 
           mkdir -p dist
 
           # Create DMG
-          hdiutil create -volname "Margin" -srcfolder "$APP_PATH" \
+          hdiutil create -volname "The Heap" -srcfolder "$APP_PATH" \
             -ov -format UDZO "dist/${DMG_NAME}"
 
           # Create checksum

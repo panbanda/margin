@@ -12,7 +12,7 @@
 //! # Example
 //!
 //! ```ignore
-//! use margin::embedding::{EmbeddingEngine, VectorStore};
+//! use heap::embedding::{EmbeddingEngine, VectorStore};
 //!
 //! let store = VectorStore::new();
 //! let mut engine = EmbeddingEngine::with_defaults(store);

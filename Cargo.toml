@@ -1,11 +1,11 @@
 [package]
-name = "margin"
+name = "heap"
 version = "0.1.0"
 edition = "2021"
-license = "AGPL-3.0"
+license = "Apache-2.0"
 description = "A keyboard-driven, AI-augmented email client"
-repository = "https://github.com/panbanda/margin"
-authors = ["margin contributors"]
+repository = "https://github.com/panbanda/heap"
+authors = ["Jonathan Reyes <me@jonathanreyes.com>"]
 rust-version = "1.75"
 
 [dependencies]
@@ -102,8 +102,8 @@ opt-level = 3
 
 # macOS App Bundle Configuration
 [package.metadata.bundle]
-name = "Margin"
-identifier = "com.panbanda.margin"
+name = "The Heap"
+identifier = "com.panbanda.heap"
 icon = ["resources/app-icon@2x.png", "resources/app-icon.png"]
 copyright = "Copyright (c) 2024 Panbanda. All rights reserved."
 category = "public.app-category.productivity"
