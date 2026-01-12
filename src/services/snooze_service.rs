@@ -400,7 +400,11 @@ mod tests {
         let now = Utc::now();
         for duration in durations {
             let wake = duration.wake_time();
-            assert!(wake > now, "{:?} wake time should be in the future", duration);
+            assert!(
+                wake > now,
+                "{:?} wake time should be in the future",
+                duration
+            );
         }
     }
 
@@ -414,7 +418,12 @@ mod tests {
 
         let wake_at = Utc::now() + Duration::hours(1);
         let item = service
-            .snooze_until(thread_id.clone(), account_id, wake_at, Some("INBOX".to_string()))
+            .snooze_until(
+                thread_id.clone(),
+                account_id,
+                wake_at,
+                Some("INBOX".to_string()),
+            )
             .unwrap();
 
         assert!(service.is_snoozed(&thread_id).unwrap());
@@ -477,7 +486,9 @@ mod tests {
 
         // Past item should be removed, future should remain
         assert!(!service.is_snoozed(&make_thread_id("thread-past")).unwrap());
-        assert!(service.is_snoozed(&make_thread_id("thread-future")).unwrap());
+        assert!(service
+            .is_snoozed(&make_thread_id("thread-future"))
+            .unwrap());
     }
 
     #[test]
@@ -489,7 +500,12 @@ mod tests {
         let wake_at = Utc::now() + Duration::hours(1);
 
         service
-            .snooze_until(thread_id.clone(), make_account_id("account-1"), wake_at, None)
+            .snooze_until(
+                thread_id.clone(),
+                make_account_id("account-1"),
+                wake_at,
+                None,
+            )
             .unwrap();
 
         let updated = service
@@ -504,7 +520,8 @@ mod tests {
         let storage = MockStorage::new();
         let service = SnoozeService::new(storage);
 
-        let result = service.update_snooze(&make_thread_id("nonexistent"), SnoozeDuration::Tomorrow);
+        let result =
+            service.update_snooze(&make_thread_id("nonexistent"), SnoozeDuration::Tomorrow);
         assert!(matches!(result, Err(SnoozeError::NotSnoozed(_))));
     }
 
