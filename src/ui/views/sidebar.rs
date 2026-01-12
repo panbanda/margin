@@ -3,13 +3,16 @@
 //! Contains navigation, account list, mailboxes, labels, and smart views.
 
 use gpui::{
-    div, prelude::FluentBuilder, px, Context, ElementId, InteractiveElement, IntoElement,
-    ParentElement, Render, SharedString, Styled, Window,
+    div, prelude::FluentBuilder, px, ClickEvent, Context, ElementId, InteractiveElement,
+    IntoElement, ParentElement, Render, SharedString, StatefulInteractiveElement, Styled, Window,
 };
 
 use crate::app::ViewType;
 use crate::domain::{AccountId, LabelId};
 use crate::ui::theme::ThemeColors;
+
+/// Callback type for navigation.
+type OnNavigateCallback = Box<dyn Fn(ViewType) + 'static>;
 
 /// Sidebar view component.
 pub struct Sidebar {
@@ -18,6 +21,7 @@ pub struct Sidebar {
     accounts: Vec<SidebarAccount>,
     labels: Vec<SidebarLabel>,
     collapsed: bool,
+    on_navigate: Option<OnNavigateCallback>,
 }
 
 /// Account representation for sidebar.
@@ -47,7 +51,13 @@ impl Sidebar {
             accounts: Vec::new(),
             labels: Vec::new(),
             collapsed: false,
+            on_navigate: None,
         }
+    }
+
+    /// Set the callback for when a navigation item is clicked.
+    pub fn on_navigate(&mut self, callback: impl Fn(ViewType) + 'static) {
+        self.on_navigate = Some(Box::new(callback));
     }
 
     /// Set the active view.
@@ -77,6 +87,7 @@ impl Sidebar {
         icon: &str,
         view_type: ViewType,
         unread: Option<u32>,
+        cx: &mut Context<Self>,
     ) -> impl IntoElement {
         let is_active = self.active_view == view_type;
         let bg = if is_active {
@@ -88,6 +99,14 @@ impl Sidebar {
         let text_color = self.colors.text_primary;
         let muted_color = self.colors.text_muted;
 
+        let target_view = view_type.clone();
+        let click_handler = cx.listener(move |this, _event: &ClickEvent, _window, _cx| {
+            this.active_view = target_view.clone();
+            if let Some(ref callback) = this.on_navigate {
+                callback(target_view.clone());
+            }
+        });
+
         let mut item = div()
             .id(id.into())
             .px(px(12.0))
@@ -97,6 +116,7 @@ impl Sidebar {
             .bg(bg)
             .cursor_pointer()
             .hover(move |style| style.bg(hover_bg))
+            .on_click(click_handler)
             .child(
                 div().flex().items_center().justify_between().child(
                     div()
@@ -140,7 +160,7 @@ impl Sidebar {
             .child(SharedString::from(label.to_string()))
     }
 
-    fn render_label_item(&self, label: &SidebarLabel) -> impl IntoElement {
+    fn render_label_item(&self, label: &SidebarLabel, cx: &mut Context<Self>) -> impl IntoElement {
         let is_active = matches!(&self.active_view, ViewType::Label(id) if *id == label.id);
         let bg = if is_active {
             self.colors.surface_elevated
@@ -148,6 +168,15 @@ impl Sidebar {
             gpui::Hsla::transparent_black()
         };
         let hover_bg = self.colors.surface_elevated;
+
+        let label_id = label.id.clone();
+        let click_handler = cx.listener(move |this, _event: &ClickEvent, _window, _cx| {
+            let view = ViewType::Label(label_id.clone());
+            this.active_view = view.clone();
+            if let Some(ref callback) = this.on_navigate {
+                callback(view);
+            }
+        });
 
         div()
             .id(SharedString::from(format!("label-{}", label.id.0)))
@@ -158,6 +187,7 @@ impl Sidebar {
             .bg(bg)
             .cursor_pointer()
             .hover(move |style| style.bg(hover_bg))
+            .on_click(click_handler)
             .child(
                 div()
                     .flex()
@@ -174,8 +204,40 @@ impl Sidebar {
 }
 
 impl Render for Sidebar {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let width = if self.collapsed { 60.0 } else { 220.0 };
+
+        // Pre-render all mailbox items with click handlers
+        let inbox = self.render_mailbox_item("inbox", "Inbox", "I", ViewType::Inbox, Some(3), cx);
+        let starred =
+            self.render_mailbox_item("starred", "Starred", "S", ViewType::Starred, None, cx);
+        let snoozed =
+            self.render_mailbox_item("snoozed", "Snoozed", "Z", ViewType::Snoozed, None, cx);
+        let sent = self.render_mailbox_item("sent", "Sent", ">", ViewType::Sent, None, cx);
+        let drafts =
+            self.render_mailbox_item("drafts", "Drafts", "D", ViewType::Drafts, Some(1), cx);
+        let archive =
+            self.render_mailbox_item("archive", "Archive", "A", ViewType::Archive, None, cx);
+        let trash = self.render_mailbox_item("trash", "Trash", "T", ViewType::Trash, None, cx);
+        let screener = self.render_mailbox_item(
+            "screener",
+            "New Senders",
+            "?",
+            ViewType::Screener,
+            Some(5),
+            cx,
+        );
+        let settings =
+            self.render_mailbox_item("settings", "Settings", "G", ViewType::Settings, None, cx);
+        let stats = self.render_mailbox_item("stats", "Statistics", "#", ViewType::Stats, None, cx);
+
+        // Pre-render label items
+        let label_items: Vec<_> = self
+            .labels
+            .iter()
+            .map(|l| self.render_label_item(l, cx))
+            .collect();
+        let has_labels = !self.labels.is_empty();
 
         div()
             .id("sidebar")
@@ -193,67 +255,19 @@ impl Render for Sidebar {
                     .child(
                         div()
                             .py(px(8.0))
-                            .child(self.render_mailbox_item(
-                                "inbox",
-                                "Inbox",
-                                "I",
-                                ViewType::Inbox,
-                                Some(3),
-                            ))
-                            .child(self.render_mailbox_item(
-                                "starred",
-                                "Starred",
-                                "S",
-                                ViewType::Starred,
-                                None,
-                            ))
-                            .child(self.render_mailbox_item(
-                                "snoozed",
-                                "Snoozed",
-                                "Z",
-                                ViewType::Snoozed,
-                                None,
-                            ))
-                            .child(self.render_mailbox_item(
-                                "sent",
-                                "Sent",
-                                ">",
-                                ViewType::Sent,
-                                None,
-                            ))
-                            .child(self.render_mailbox_item(
-                                "drafts",
-                                "Drafts",
-                                "D",
-                                ViewType::Drafts,
-                                Some(1),
-                            ))
-                            .child(self.render_mailbox_item(
-                                "archive",
-                                "Archive",
-                                "A",
-                                ViewType::Archive,
-                                None,
-                            ))
-                            .child(self.render_mailbox_item(
-                                "trash",
-                                "Trash",
-                                "T",
-                                ViewType::Trash,
-                                None,
-                            )),
+                            .child(inbox)
+                            .child(starred)
+                            .child(snoozed)
+                            .child(sent)
+                            .child(drafts)
+                            .child(archive)
+                            .child(trash),
                     )
                     .child(self.render_section_header("SCREENER"))
-                    .child(div().child(self.render_mailbox_item(
-                        "screener",
-                        "New Senders",
-                        "?",
-                        ViewType::Screener,
-                        Some(5),
-                    )))
-                    .when(!self.labels.is_empty(), |this| {
+                    .child(div().child(screener))
+                    .when(has_labels, |this| {
                         this.child(self.render_section_header("LABELS"))
-                            .children(self.labels.iter().map(|l| self.render_label_item(l)))
+                            .children(label_items)
                     }),
             )
             .child(
@@ -262,20 +276,8 @@ impl Render for Sidebar {
                     .py(px(8.0))
                     .border_t_1()
                     .border_color(self.colors.border)
-                    .child(self.render_mailbox_item(
-                        "settings",
-                        "Settings",
-                        "G",
-                        ViewType::Settings,
-                        None,
-                    ))
-                    .child(self.render_mailbox_item(
-                        "stats",
-                        "Statistics",
-                        "#",
-                        ViewType::Stats,
-                        None,
-                    )),
+                    .child(settings)
+                    .child(stats),
             )
     }
 }

@@ -3,14 +3,17 @@
 //! Displays a virtualized list of email threads for the current view.
 
 use gpui::{
-    div, prelude::FluentBuilder, px, Context, FontWeight, InteractiveElement, IntoElement,
-    ParentElement, Render, SharedString, Styled, Window,
+    div, prelude::FluentBuilder, px, ClickEvent, Context, FontWeight, InteractiveElement,
+    IntoElement, ParentElement, Render, SharedString, StatefulInteractiveElement, Styled, Window,
 };
 
 use crate::app::ViewType;
 use crate::domain::ThreadId;
 use crate::ui::components::VirtualizedListState;
 use crate::ui::theme::ThemeColors;
+
+/// Callback type for thread selection.
+type OnSelectCallback = Box<dyn Fn(ThreadId) + 'static>;
 
 /// Message list view component.
 pub struct MessageList {
@@ -21,6 +24,7 @@ pub struct MessageList {
     focused_index: usize,
     list_state: VirtualizedListState,
     loading: bool,
+    on_select: Option<OnSelectCallback>,
 }
 
 /// Thread item for the message list.
@@ -49,7 +53,13 @@ impl MessageList {
             focused_index: 0,
             list_state: VirtualizedListState::new(0).with_item_height(72.0),
             loading: false,
+            on_select: None,
         }
+    }
+
+    /// Set the callback for when a thread is selected (clicked).
+    pub fn on_select(&mut self, callback: impl Fn(ThreadId) + 'static) {
+        self.on_select = Some(Box::new(callback));
     }
 
     /// Set the current view type.
@@ -139,7 +149,12 @@ impl MessageList {
             )
     }
 
-    fn render_thread_item(&self, thread: &ThreadListItem, index: usize) -> impl IntoElement {
+    fn render_thread_item(
+        &self,
+        thread: &ThreadListItem,
+        index: usize,
+        cx: &mut Context<Self>,
+    ) -> impl IntoElement {
         let is_selected = self
             .selected_thread_id
             .as_ref()
@@ -167,6 +182,17 @@ impl MessageList {
         let text_muted = self.colors.text_muted;
         let starred_color = self.colors.starred;
 
+        let thread_id = thread.id.clone();
+        let click_handler = cx.listener(move |this, _event: &ClickEvent, _window, _cx| {
+            this.selected_thread_id = Some(thread_id.clone());
+            if let Some(idx) = this.threads.iter().position(|t| t.id == thread_id) {
+                this.focused_index = idx;
+            }
+            if let Some(ref callback) = this.on_select {
+                callback(thread_id.clone());
+            }
+        });
+
         div()
             .id(SharedString::from(format!("thread-{}", index)))
             .px(px(16.0))
@@ -176,6 +202,7 @@ impl MessageList {
             .border_color(border_color)
             .cursor_pointer()
             .hover(move |style| style.bg(hover_bg))
+            .on_click(click_handler)
             .child(
                 div()
                     .flex()
@@ -266,7 +293,15 @@ impl MessageList {
 }
 
 impl Render for MessageList {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        // Collect thread items for rendering with click handlers
+        let thread_items: Vec<_> = self
+            .threads
+            .iter()
+            .enumerate()
+            .map(|(idx, thread)| self.render_thread_item(thread, idx, cx))
+            .collect();
+
         div()
             .id("message-list")
             .w(px(380.0))
@@ -286,12 +321,7 @@ impl Render for MessageList {
                         this.child(self.render_empty_state())
                     })
                     .when(!self.loading && !self.threads.is_empty(), |this| {
-                        this.children(
-                            self.threads
-                                .iter()
-                                .enumerate()
-                                .map(|(idx, thread)| self.render_thread_item(thread, idx)),
-                        )
+                        this.children(thread_items)
                     }),
             )
     }
@@ -333,6 +363,7 @@ mod tests {
             focused_index: 0,
             list_state: VirtualizedListState::new(0),
             loading: false,
+            on_select: None,
         };
         assert_eq!(list.view_title(), "Inbox");
     }
@@ -351,6 +382,7 @@ mod tests {
             focused_index: 0,
             list_state: VirtualizedListState::new(3),
             loading: false,
+            on_select: None,
         };
 
         assert_eq!(list.focused_index, 0);
