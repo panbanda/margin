@@ -473,7 +473,9 @@ mod tests {
 
     #[test]
     fn service_notify_and_dismiss() {
-        let mut service = NotificationService::with_defaults();
+        let mut settings = NotificationSettings::default();
+        settings.rate_limit = Duration::from_secs(0); // Disable rate limiting for test
+        let mut service = NotificationService::new(settings);
 
         service.notify(NotificationRequest::info("Test 1")).unwrap();
         service.notify(NotificationRequest::info("Test 2")).unwrap();
