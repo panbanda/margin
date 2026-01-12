@@ -2,111 +2,132 @@ name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
-
-env:
-  CARGO_TERM_COLOR: always
+  issues: write
+  pull-requests: write
 
 jobs:
-  create-release:
-    name: Create Release
+  release-please:
+    name: Release Please
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Get version
-        id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      - name: Create Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          generate_release_notes: true
 
-  build-linux:
-    name: Build Linux
-    needs: create-release
-    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-      - name: Install dependencies
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  build:
+    name: Build (${{ matrix.target }})
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            archive: tar.gz
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+            archive: tar.gz
+          - target: x86_64-apple-darwin
+            os: macos-14
+            archive: tar.gz
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            archive: tar.gz
+
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add cross-compilation target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-dev libwayland-dev libvulkan-dev
-      - name: Build
-        run: cargo build --release
-      - name: Package
-        run: |
-          mkdir -p dist
-          cp target/release/margin dist/margin-linux-x86_64
-          chmod +x dist/margin-linux-x86_64
-          tar -czvf dist/margin-${{ needs.create-release.outputs.version }}-linux-x86_64.tar.gz -C dist margin-linux-x86_64
-      - name: Upload artifact
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/margin-${{ needs.create-release.outputs.version }}-linux-x86_64.tar.gz
 
-  build-macos-intel:
-    name: Build macOS (Intel)
-    needs: create-release
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-apple-darwin
-      - uses: Swatinem/rust-cache@v2
-      - name: Build
-        run: cargo build --release --target x86_64-apple-darwin
-      - name: Package
-        run: |
-          mkdir -p dist
-          cp target/x86_64-apple-darwin/release/margin dist/margin-macos-x86_64
-          chmod +x dist/margin-macos-x86_64
-          tar -czvf dist/margin-${{ needs.create-release.outputs.version }}-macos-x86_64.tar.gz -C dist margin-macos-x86_64
-      - name: Upload artifact
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/margin-${{ needs.create-release.outputs.version }}-macos-x86_64.tar.gz
+      - name: Cache cargo registry and build
+        uses: Swatinem/rust-cache@v2
 
-  build-macos-arm:
-    name: Build macOS (ARM)
-    needs: create-release
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin
-      - uses: Swatinem/rust-cache@v2
-      - name: Build
-        run: cargo build --release --target aarch64-apple-darwin
-      - name: Package
-        run: |
-          mkdir -p dist
-          cp target/aarch64-apple-darwin/release/margin dist/margin-macos-aarch64
-          chmod +x dist/margin-macos-aarch64
-          tar -czvf dist/margin-${{ needs.create-release.outputs.version }}-macos-aarch64.tar.gz -C dist margin-macos-aarch64
-      - name: Upload artifact
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/margin-${{ needs.create-release.outputs.version }}-macos-aarch64.tar.gz
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }}
 
-  publish-release:
-    name: Publish Release
-    needs: [create-release, build-linux, build-macos-intel, build-macos-arm]
+      - name: Create archive
+        run: |
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          VERSION="${TAG#margin-v}"
+          ARCHIVE_NAME="margin_${VERSION}_${{ matrix.target }}"
+
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/margin dist/
+          cd dist
+          tar -czvf "${ARCHIVE_NAME}.tar.gz" margin
+          shasum -a 256 "${ARCHIVE_NAME}.tar.gz" > "${ARCHIVE_NAME}.tar.gz.sha256"
+
+      - name: Upload release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          gh release upload "$TAG" dist/*.tar.gz dist/*.sha256 --clobber
+
+  checksums:
+    name: Create Checksums
+    needs: [release-please, build]
+    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
-      - name: Publish release
-        uses: softprops/action-gh-release@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          draft: false
+          ref: ${{ needs.release-please.outputs.tag_name }}
+
+      - name: Download release artifacts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p dist
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          gh release download "$TAG" --pattern "*.tar.gz" --dir dist
+          gh release download "$TAG" --pattern "*.sha256" --dir dist
+
+      - name: Create consolidated checksums
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          cat dist/*.sha256 | sort > dist/checksums.txt
+          gh release upload "$TAG" dist/checksums.txt --clobber

@@ -190,6 +190,22 @@ mod tests {
         for migration in super::super::super::schema::all_migrations() {
             conn.execute_batch(migration).unwrap();
         }
+        // Insert test accounts for FK constraint (labels reference accounts)
+        conn.execute(
+            "INSERT INTO accounts (id, email, provider_type, provider_config, created_at, updated_at)
+             VALUES ('acc-1', 'test@example.com', 'gmail', '{}', datetime('now'), datetime('now'))",
+            [],
+        ).unwrap();
+        conn.execute(
+            "INSERT INTO accounts (id, email, provider_type, provider_config, created_at, updated_at)
+             VALUES ('acc-2', 'other@example.com', 'gmail', '{}', datetime('now'), datetime('now'))",
+            [],
+        ).unwrap();
+        conn.execute(
+            "INSERT INTO accounts (id, email, provider_type, provider_config, created_at, updated_at)
+             VALUES ('account-1', 'account@example.com', 'gmail', '{}', datetime('now'), datetime('now'))",
+            [],
+        ).unwrap();
         conn
     }
 
